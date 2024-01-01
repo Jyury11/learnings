@@ -7,9 +7,9 @@ class DeleteUserUsecase:
 
   def execute(self, id: str) -> None:
     self.table.delete_item(
-      key={
+      Key={
         "id": id,
-      },
+      }
     )
 
 

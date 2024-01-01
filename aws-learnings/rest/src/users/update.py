@@ -2,7 +2,7 @@ import boto3
 import json
 
 
-class CreateUserUsecase:
+class UpdateUserUsecase:
   def __init__(self) -> None:
     self.dynamodb = boto3.resource("dynamodb")
     self.table = self.dynamodb.Table("users")
@@ -15,26 +15,30 @@ class CreateUserUsecase:
     address: str,
     tel: str,
   ) -> None:
-    # user = {
-    #   "id": id,
-    #   "name": name,
-    #   "age": age,
-    #   "address": address,
-    #   "tel": tel,
-    # }
-    # self.table.put_item(
-    #   Item=user,
-    # )
+    expression_values = {
+      ':newName': name,
+      ':newAge': age,
+      ':newAddress': address,
+      ':newTel': tel,
+    }
 
-    # todo 実装
-    pass
+    self.table.update_item(
+        Key={
+            'id': id
+        },
+        UpdateExpression="SET #name = :newName, age = :newAge, address = :newAddress, tel = :newTel",
+        ExpressionAttributeNames= {
+          '#name' : 'name'
+        },
+        ExpressionAttributeValues=expression_values
+    )
 
 
 def lambda_handler(event, context):
   body = json.loads(event['body'])
 
-  create_user = CreateUserUsecase()
-  create_user.execute(
+  update_user = UpdateUserUsecase()
+  update_user.execute(
     id=body["id"],
     name=body["name"],
     age=body["age"],
